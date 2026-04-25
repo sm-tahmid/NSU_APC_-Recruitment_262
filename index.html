@@ -1,665 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NSUAPC – Club Registration</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy: #0a1628;
-    --blue: #1a3a6b;
-    --accent: #2563eb;
-    --sky: #3b82f6;
-    --light: #eff6ff;
-    --white: #ffffff;
-    --gray: #94a3b8;
-    --border: #dbeafe;
-    --error: #ef4444;
-    --success: #22c55e;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
-  }
-
-  header {
-    position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 48px;
-    border-bottom: 1px solid rgba(37,99,235,0.25);
-    background: rgba(10,22,40,0.85);
-    backdrop-filter: blur(12px);
-  }
-
-  .logo { display: flex; align-items: center; gap: 14px; }
-
-  .logo-badge {
-    width: 46px; height: 46px;
-    background: linear-gradient(135deg, var(--accent), var(--sky));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700; font-size: 15px; letter-spacing: 0.5px;
-    box-shadow: 0 4px 20px rgba(37,99,235,0.4);
-  }
-
-  .logo-text h1 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 22px; font-weight: 700; letter-spacing: 2px;
-  }
-  .logo-text p { font-size: 11px; color: var(--sky); letter-spacing: 1.5px; text-transform: uppercase; }
-
-  nav { display: flex; gap: 8px; }
-
-  nav button {
-    padding: 8px 20px; border-radius: 6px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px; font-weight: 600; letter-spacing: 1px;
-    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
-  }
-
-  .nav-member { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .nav-member:hover { background: #1d4ed8; }
-  .nav-active { background: rgba(59,130,246,0.15); color: var(--sky); border-color: rgba(59,130,246,0.4); }
-  .nav-admin { background: transparent; color: var(--sky); border-color: rgba(59,130,246,0.4); }
-  .nav-admin:hover { background: rgba(59,130,246,0.1); }
-
-  .page { display: none; position: relative; z-index: 1; }
-  .page.active { display: block; }
-
-  /* HOME */
-  #page-home {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: calc(100vh - 83px);
-    text-align: center; padding: 60px 24px;
-  }
-  #page-home.active { display: flex; }
-
-  .hero-label {
-    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--sky); border: 1px solid rgba(59,130,246,0.3);
-    padding: 5px 16px; border-radius: 20px; margin-bottom: 28px;
-    background: rgba(37,99,235,0.08);
-  }
-
-  .hero-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: clamp(42px, 7vw, 80px);
-    font-weight: 700; line-height: 1.05; letter-spacing: 3px; margin-bottom: 20px;
-  }
-
-  .hero-title span {
-    background: linear-gradient(90deg, var(--sky), #93c5fd);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-
-  .hero-sub { font-size: 16px; color: var(--gray); max-width: 520px; line-height: 1.7; margin-bottom: 44px; }
-
-  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-
-  .btn-primary {
-    padding: 14px 36px;
-    background: linear-gradient(135deg, var(--accent), var(--sky));
-    color: #fff; border: none; border-radius: 8px; cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.25s;
-    box-shadow: 0 4px 24px rgba(37,99,235,0.4);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,99,235,0.55); }
-
-  .btn-outline {
-    padding: 14px 36px; background: transparent; color: var(--sky);
-    border: 1px solid rgba(59,130,246,0.5); border-radius: 8px; cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.25s;
-  }
-  .btn-outline:hover { background: rgba(59,130,246,0.1); }
-
-  .hero-stats {
-    display: flex; gap: 48px; margin-top: 64px;
-    border-top: 1px solid rgba(37,99,235,0.2); padding-top: 40px;
-  }
-
-  .stat { text-align: center; }
-  .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 36px; font-weight: 700; color: var(--sky); }
-  .stat-label { font-size: 12px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; }
-
-  /* FORM */
-  .panel { max-width: 640px; margin: 0 auto; padding: 48px 24px 64px; }
-
-  .panel-header { margin-bottom: 36px; }
-  .panel-tag { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 10px; }
-  .panel-title { font-family: 'Rajdhani', sans-serif; font-size: 34px; font-weight: 700; letter-spacing: 1.5px; }
-  .panel-sub { color: var(--gray); font-size: 14px; margin-top: 6px; }
-
-  .form-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(37,99,235,0.2);
-    border-radius: 14px; padding: 36px;
-    backdrop-filter: blur(8px);
-  }
-
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-  .field { margin-bottom: 20px; }
-  .field label {
-    display: block; font-size: 12px; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--sky); margin-bottom: 8px; font-weight: 500;
-  }
-
-  .field input, .field select {
-    width: 100%; padding: 12px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(37,99,235,0.25);
-    border-radius: 8px; color: var(--white);
-    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
-    transition: border-color 0.2s, background 0.2s; outline: none;
-  }
-  .field input::placeholder { color: rgba(148,163,184,0.5); }
-  .field input:focus, .field select:focus { border-color: var(--accent); background: rgba(37,99,235,0.08); }
-  .field select option { background: var(--navy); }
-
-  .serial-field { position: relative; }
-  .serial-field input {
-    padding-right: 48px; font-family: 'Rajdhani', sans-serif;
-    font-size: 18px; font-weight: 700; letter-spacing: 2px;
-  }
-  .serial-badge {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-    width: 24px; height: 24px; background: rgba(37,99,235,0.2);
-    border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  }
-  .serial-badge svg { width: 14px; height: 14px; fill: var(--sky); }
-
-  .submit-btn {
-    width: 100%; padding: 15px;
-    background: linear-gradient(135deg, var(--accent), var(--sky));
-    color: #fff; border: none; border-radius: 8px;
-    font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 8px;
-    transition: all 0.25s; box-shadow: 0 4px 20px rgba(37,99,235,0.35);
-  }
-  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,99,235,0.5); }
-  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-  .divider { border: none; height: 1px; background: rgba(37,99,235,0.15); margin: 24px 0; }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 32px; right: 32px;
-    padding: 14px 24px; border-radius: 10px;
-    font-size: 14px; font-weight: 500;
-    z-index: 999; opacity: 0; transform: translateY(16px);
-    transition: all 0.3s; pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { background: var(--success); color: #fff; }
-  .toast.error { background: var(--error); color: #fff; }
-
-  /* ADMIN LOGIN */
-  #page-admin-login { min-height: calc(100vh - 83px); display: flex; align-items: center; justify-content: center; padding: 24px; }
-  #page-admin-login.active { display: flex; }
-
-  .login-card {
-    width: 100%; max-width: 400px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(37,99,235,0.25);
-    border-radius: 16px; padding: 44px 36px;
-    backdrop-filter: blur(10px); text-align: center;
-  }
-
-  .lock-icon {
-    width: 64px; height: 64px;
-    background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(59,130,246,0.1));
-    border: 1px solid rgba(37,99,235,0.3);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 24px;
-  }
-  .lock-icon svg { width: 30px; height: 30px; stroke: var(--sky); fill: none; stroke-width: 1.5; }
-
-  .login-title { font-family: 'Rajdhani', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px; }
-  .login-sub { color: var(--gray); font-size: 13px; margin-bottom: 28px; }
-
-  /* ADMIN DASHBOARD */
-  #page-admin { padding: 40px 32px; }
-  #page-admin.active { display: block; }
-
-  .dash-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px;
-  }
-  .dash-title { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 2px; }
-  .dash-actions { display: flex; gap: 10px; }
-
-  .btn-sm {
-    padding: 8px 18px; border-radius: 6px;
-    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
-    letter-spacing: 1px; cursor: pointer; transition: all 0.2s; border: none;
-  }
-  .btn-export { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
-  .btn-export:hover { background: rgba(34,197,94,0.25); }
-  .btn-logout { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
-  .btn-logout:hover { background: rgba(239,68,68,0.22); }
-
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
-
-  .stat-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(37,99,235,0.2);
-    border-radius: 10px; padding: 20px 24px;
-  }
-  .stat-card-num { font-family: 'Rajdhani', sans-serif; font-size: 36px; font-weight: 700; color: var(--sky); }
-  .stat-card-label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
-
-  .search-bar { display: flex; gap: 10px; margin-bottom: 18px; }
-  .search-bar input {
-    flex: 1; padding: 10px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(37,99,235,0.25);
-    border-radius: 8px; color: var(--white);
-    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; outline: none;
-  }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: rgba(148,163,184,0.4); }
-
-  .table-wrap {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(37,99,235,0.15);
-    border-radius: 12px; overflow: hidden; overflow-x: auto;
-  }
-
-  table { width: 100%; border-collapse: collapse; min-width: 700px; }
-
-  thead tr { background: rgba(37,99,235,0.12); border-bottom: 1px solid rgba(37,99,235,0.2); }
-
-  th {
-    padding: 13px 16px; text-align: left;
-    font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600;
-    letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky);
-  }
-
-  tbody tr { border-bottom: 1px solid rgba(37,99,235,0.08); transition: background 0.15s; }
-  tbody tr:hover { background: rgba(37,99,235,0.06); }
-  tbody tr:last-child { border-bottom: none; }
-
-  td { padding: 12px 16px; font-size: 13.5px; color: rgba(255,255,255,0.85); }
-
-  .serial-chip {
-    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
-    color: var(--sky); letter-spacing: 1px;
-    background: rgba(37,99,235,0.12); padding: 3px 10px; border-radius: 4px;
-  }
-
-  .empty-state { text-align: center; padding: 60px; color: var(--gray); font-size: 14px; }
-
-  /* SHEETS INFO BOX */
-  .info-box {
-    background: rgba(37,99,235,0.08);
-    border: 1px solid rgba(37,99,235,0.2);
-    border-radius: 10px; padding: 16px 20px;
-    font-size: 13px; color: var(--gray);
-    margin-bottom: 24px; line-height: 1.6;
-  }
-  .info-box strong { color: var(--sky); }
-
-  @media (max-width: 600px) {
-    header { padding: 14px 20px; }
-    .form-row { grid-template-columns: 1fr; }
-    .form-card { padding: 24px; }
-    .hero-stats { gap: 28px; }
-    #page-admin { padding: 24px 16px; }
-    .dash-header { flex-direction: column; align-items: flex-start; gap: 14px; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Registration Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none !important; }
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #3b82f6; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
 
-<header>
-  <div class="logo">
-    <div class="logo-badge">NSU</div>
-    <div class="logo-text">
-      <h1>NSUAPC</h1>
-      <p>North South University · APC</p>
-    </div>
-  </div>
-  <nav>
-    <button class="nav-member" onclick="showPage('home')">Home</button>
-    <button class="nav-member" onclick="showPage('register')">Register</button>
-    <button class="nav-admin" onclick="showPage('admin-login')">Admin</button>
-  </nav>
-</header>
-
-<!-- HOME -->
-<section id="page-home" class="page active">
-  <div class="hero-label">NSU Astronomy & Physics Club</div>
-  <h2 class="hero-title">Welcome to<br><span>NSUAPC</span></h2>
-  <p class="hero-sub">Join North South University's Astronomy & Physics Club. Register your membership, track your serial number, and stay connected.</p>
-  <div class="hero-actions">
-    <button class="btn-primary" onclick="showPage('register')">Register Now</button>
-    <button class="btn-outline" onclick="showPage('admin-login')">Admin Panel</button>
-  </div>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num" id="total-count">0</div>
-      <div class="stat-label">Members</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">2025</div>
-      <div class="stat-label">Session</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">NSU</div>
-      <div class="stat-label">Campus</div>
-    </div>
-  </div>
-</section>
-
-<!-- REGISTER -->
-<section id="page-register" class="page">
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-tag">Member Registration</div>
-      <div class="panel-title">Join NSUAPC</div>
-      <div class="panel-sub">Fill in your details to complete club registration.</div>
-    </div>
-    <div class="form-card">
-      <div class="field">
-        <label>Serial Number</label>
-        <div class="serial-field">
-          <input type="text" id="reg-serial" placeholder="e.g. APC-0042" maxlength="20">
-          <div class="serial-badge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="12" y="12" width="3" height="3"/><rect x="18" y="12" width="3" height="3"/><rect x="15" y="18" width="6" height="3"/></svg>
-          </div>
+    <div class="max-w-4xl mx-auto pt-12 pb-6 px-4">
+        <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm mb-6">
+            <h1 class="text-2xl font-bold text-blue-600">Registration Portal</h1>
+            <div class="space-x-4">
+                <button onclick="switchTab('member')" id="btn-member" class="font-semibold text-blue-600 border-b-2 border-blue-600 pb-1">Member View</button>
+                <button onclick="switchTab('admin')" id="btn-admin" class="font-semibold text-gray-500 pb-1">Admin Panel</button>
+            </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label>Full Name</label>
-          <input type="text" id="reg-name" placeholder="Your full name">
+
+        <div id="member-panel" class="bg-white p-8 rounded-lg shadow-md transition-all">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Check Your Registration Status</h2>
+            <div class="flex space-x-2">
+                <input type="text" id="member-search-id" placeholder="Enter Serial Number" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="searchDatabase('member')" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">Search</button>
+            </div>
+            <div id="member-loading" class="hidden flex justify-center mt-6"><div class="spinner"></div></div>
+            <div id="member-result" class="hidden mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md">
+                </div>
         </div>
-        <div class="field">
-          <label>NSU ID</label>
-          <input type="text" id="reg-id" placeholder="e.g. 2212345678">
+
+        <div id="admin-panel" class="hidden bg-white p-8 rounded-lg shadow-md transition-all border-t-4 border-indigo-600">
+            <div id="admin-login">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Admin Authentication required</h2>
+                <input type="password" id="admin-password" placeholder="Enter Admin Password (demo: admin123)" class="w-full px-4 py-2 border rounded-md mb-4">
+                <button onclick="verifyAdmin()" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 w-full">Access Panel</button>
+            </div>
+
+            <div id="admin-interface" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Admin Control Center</h2>
+                <div class="flex space-x-2">
+                    <input type="text" id="admin-search-id" placeholder="Enter Applicant Serial Number" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="searchDatabase('admin')" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition">Lookup</button>
+                </div>
+                
+                <div id="admin-loading" class="hidden flex justify-center mt-6"><div class="spinner border-left-color: #4f46e5;"></div></div>
+                
+                <div id="admin-result" class="hidden mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md">
+                    <div id="admin-data-container" class="mb-4"></div>
+                    <hr class="my-4">
+                    <h3 class="font-semibold text-gray-700 mb-2">Evaluation Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Interviewed By (Name)</label>
+                            <input type="text" id="interviewer-name" placeholder="Admin/Interviewer Name" class="w-full px-4 py-2 border rounded-md">
+                        </div>
+                        <div class="flex items-end space-x-2">
+                            <button onclick="updateStatus('Accepted')" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full font-bold">Accept</button>
+                            <button onclick="updateStatus('Declined')" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full font-bold">Decline</button>
+                        </div>
+                    </div>
+                    <div id="admin-action-message" class="mt-3 text-sm font-semibold hidden"></div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label>Department</label>
-          <select id="reg-dept">
-            <option value="">Select department</option>
-            <option>CSE</option><option>EEE</option><option>BBA</option>
-            <option>ECO</option><option>PHY</option><option>MATH</option>
-            <option>ENV</option><option>BIO</option><option>CEN</option><option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Session / Year</label>
-          <select id="reg-session">
-            <option value="">Select session</option>
-            <option>Fall 2025</option><option>Summer 2025</option>
-            <option>Spring 2025</option><option>Fall 2024</option>
-            <option>Summer 2024</option><option>Spring 2024</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label>Phone Number</label>
-          <input type="tel" id="reg-phone" placeholder="+880 1X XX XXX XXX">
-        </div>
-        <div class="field">
-          <label>Email Address</label>
-          <input type="email" id="reg-email" placeholder="you@northsouth.edu">
-        </div>
-      </div>
-      <hr class="divider">
-      <button class="submit-btn" id="reg-btn" onclick="submitRegistration()">Submit Registration</button>
     </div>
-  </div>
-</section>
 
-<!-- ADMIN LOGIN -->
-<section id="page-admin-login" class="page">
-  <div class="login-card">
-    <div class="lock-icon">
-      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-    </div>
-    <div class="login-title">Admin Access</div>
-    <div class="login-sub">Enter the admin password to continue</div>
-    <div class="field" style="text-align:left">
-      <label>Password</label>
-      <input type="password" id="admin-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter') adminLogin()">
-    </div>
-    <button class="submit-btn" onclick="adminLogin()">Unlock Panel</button>
-    <p style="color:var(--gray);font-size:12px;margin-top:18px;cursor:pointer" onclick="showPage('home')">← Back to Home</p>
-  </div>
-</section>
+    <script>
+        // ==========================================
+        // CONFIGURATION: REPLACE THIS URL WITH YOURS
+        // ==========================================
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMYXcpB_RS7wuvLbViqPOhl9yVgS-b5aSi-V2kKvkIA-Mfr5J8Tgc-dstYwvPdM2KF/exec";
+        
+        let currentSearchedSerial = null;
 
-<!-- ADMIN DASHBOARD -->
-<section id="page-admin" class="page">
-  <div class="dash-header">
-    <div class="dash-title">Admin Dashboard</div>
-    <div class="dash-actions">
-      <button class="btn-sm btn-export" onclick="exportCSV()">Export CSV</button>
-      <button class="btn-sm btn-logout" onclick="adminLogout()">Logout</button>
-    </div>
-  </div>
+        function switchTab(tab) {
+            document.getElementById('member-panel').classList.add('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('btn-member').className = "font-semibold text-gray-500 pb-1";
+            document.getElementById('btn-admin').className = "font-semibold text-gray-500 pb-1";
 
-  <div class="info-box">
-    <strong>Google Sheets Integration:</strong> To sync data to Google Sheets, deploy a Google Apps Script Web App and paste the URL into the <code>SHEETS_URL</code> variable in the script. See the README comment in the source code for step-by-step instructions.
-  </div>
+            if (tab === 'member') {
+                document.getElementById('member-panel').classList.remove('hidden');
+                document.getElementById('btn-member').className = "font-semibold text-blue-600 border-b-2 border-blue-600 pb-1";
+            } else {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('btn-admin').className = "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-1";
+            }
+        }
 
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-card-num" id="admin-total">0</div>
-      <div class="stat-card-label">Total Registrations</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-card-num" id="admin-today">0</div>
-      <div class="stat-card-label">Registered Today</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-card-num" id="admin-depts">0</div>
-      <div class="stat-card-label">Departments</div>
-    </div>
-  </div>
+        function verifyAdmin() {
+            const pass = document.getElementById('admin-password').value;
+            // Basic UI lock. Change the string below for your preferred internal team password.
+            if (pass === "12345") { 
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-interface').classList.remove('hidden');
+            } else {
+                alert("Incorrect authorization key.");
+            }
+        }
 
-  <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search by serial, name, or ID..." oninput="filterTable()">
-  </div>
+        async function searchDatabase(role) {
+            const inputId = role === 'member' ? 'member-search-id' : 'admin-search-id';
+            const loadingId = role === 'member' ? 'member-loading' : 'admin-loading';
+            const resultId = role === 'member' ? 'member-result' : 'admin-result';
+            
+            const serial = document.getElementById(inputId).value.trim();
+            if(!serial) return alert("Please enter a valid Serial Number.");
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th><th>Serial</th><th>Name</th><th>ID</th>
-          <th>Dept</th><th>Session</th><th>Phone</th><th>Email</th><th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="admin-table-body">
-        <tr><td colspan="9" class="empty-state">No registrations yet.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+            currentSearchedSerial = serial; // Save for admin actions
 
-<div class="toast" id="toast"></div>
+            // UI Reset
+            document.getElementById(resultId).classList.add('hidden');
+            document.getElementById(loadingId).classList.remove('hidden');
+            if(role === 'admin') {
+                document.getElementById('admin-action-message').classList.add('hidden');
+                document.getElementById('interviewer-name').value = ''; 
+            }
 
-<script>
-  /*
-  ============================================================
-  GOOGLE SHEETS INTEGRATION GUIDE
-  ============================================================
-  1. Open Google Sheets → Extensions → Apps Script
-  2. Paste this code:
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?serial=${encodeURIComponent(serial)}`);
+                const data = await response.json();
+                
+                document.getElementById(loadingId).classList.add('hidden');
 
-  function doPost(e) {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    sheet.appendRow([data.serial, data.name, data.id, data.dept,
-                     data.session, data.phone, data.email, data.date]);
-    return ContentService.createTextOutput('OK');
-  }
+                if (data.error) {
+                    document.getElementById(resultId).innerHTML = `<p class="text-red-500 font-semibold">${data.error}</p>`;
+                    document.getElementById(resultId).classList.remove('hidden');
+                } else {
+                    displayData(data, role, resultId);
+                }
+            } catch (error) {
+                document.getElementById(loadingId).classList.add('hidden');
+                alert("Connection error. Ensure your Apps Script Web App URL is correct and deployed securely.");
+            }
+        }
 
-  3. Deploy → New Deployment → Web App
-     - Execute as: Me
-     - Who has access: Anyone
-  4. Copy the Web App URL
-  5. Paste it below as SHEETS_URL
-  ============================================================
-  */
+        function displayData(data, role, resultId) {
+            let html = `<div class="grid grid-cols-2 gap-y-2 text-sm md:text-base">`;
+            
+            const fieldsToDisplay = ['Name', 'Department', 'ID Number', 'Phone Number', 'Status', 'Interviewed By'];
+            
+            fieldsToDisplay.forEach(field => {
+                let value = data[field] || '<span class="text-gray-400 italic">Pending/Empty</span>';
+                
+                // Color code status if present
+                if(field === 'Status') {
+                    if(data[field] === 'Accepted') value = `<span class="text-green-600 font-bold">${data[field]}</span>`;
+                    else if (data[field] === 'Declined') value = `<span class="text-red-600 font-bold">${data[field]}</span>`;
+                }
 
-  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyNk8d-hE2_9LudF_McNdX_2-nDpwYX9OH3zFzXVe4vuz9ghjlzwF_T-uYtbv7lTddI/exec';
-  const ADMIN_PASSWORD = '12345';
+                html += `<div class="font-semibold text-gray-600">${field}:</div><div>${value}</div>`;
+            });
+            html += `</div>`;
 
-  let members = JSON.parse(localStorage.getItem('nsuapc_members') || '[]');
+            if (role === 'member') {
+                document.getElementById(resultId).innerHTML = html;
+            } else if (role === 'admin') {
+                document.getElementById('admin-data-container').innerHTML = html;
+            }
+            document.getElementById(resultId).classList.remove('hidden');
+        }
 
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    if (name === 'home') updateHomeCount();
-  }
+        async function updateStatus(status) {
+            const interviewer = document.getElementById('interviewer-name').value.trim();
+            if(!interviewer) return alert("Please enter the Interviewer's name before updating status.");
+            
+            const btnContainer = document.getElementById('admin-action-message');
+            btnContainer.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            btnContainer.classList.add('text-blue-600');
+            btnContainer.innerText = "Updating database...";
 
-  function updateHomeCount() {
-    document.getElementById('total-count').textContent = members.length;
-  }
+            const payload = {
+                action: 'updateStatus',
+                serial: currentSearchedSerial,
+                status: status,
+                interviewer: interviewer
+            };
 
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast ' + type + ' show';
-    setTimeout(() => t.className = 'toast', 3000);
-  }
-
-  async function submitRegistration() {
-    const serial  = document.getElementById('reg-serial').value.trim();
-    const name    = document.getElementById('reg-name').value.trim();
-    const id      = document.getElementById('reg-id').value.trim();
-    const dept    = document.getElementById('reg-dept').value;
-    const session = document.getElementById('reg-session').value;
-    const phone   = document.getElementById('reg-phone').value.trim();
-    const email   = document.getElementById('reg-email').value.trim();
-
-    if (!serial || !name || !id || !dept || !session || !phone || !email) {
-      showToast('Please fill in all fields.', 'error'); return;
-    }
-    if (members.find(m => m.serial === serial)) {
-      showToast('Serial number already registered!', 'error'); return;
-    }
-
-    const btn = document.getElementById('reg-btn');
-    btn.disabled = true; btn.textContent = 'Submitting...';
-
-    const entry = {
-      serial, name, id, dept, session, phone, email,
-      date: new Date().toLocaleDateString('en-GB')
-    };
-
-    members.push(entry);
-    localStorage.setItem('nsuapc_members', JSON.stringify(members));
-
-    if (SHEETS_URL) {
-      try {
-        await fetch(SHEETS_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(entry)
-        });
-      } catch(e) { console.warn('Sheets sync failed:', e); }
-    }
-
-    ['reg-serial','reg-name','reg-id','reg-phone','reg-email'].forEach(f =>
-      document.getElementById(f).value = '');
-    document.getElementById('reg-dept').value = '';
-    document.getElementById('reg-session').value = '';
-
-    btn.disabled = false; btn.textContent = 'Submit Registration';
-    showToast('Registration successful! Welcome to NSUAPC 🎉');
-    updateHomeCount();
-  }
-
-  function adminLogin() {
-    const pass = document.getElementById('admin-pass').value;
-    if (pass === ADMIN_PASSWORD) {
-      document.getElementById('admin-pass').value = '';
-      showPage('admin');
-      renderAdminTable(members);
-      updateAdminStats();
-    } else {
-      showToast('Incorrect password.', 'error');
-    }
-  }
-
-  function adminLogout() { showPage('home'); }
-
-  function updateAdminStats() {
-    document.getElementById('admin-total').textContent = members.length;
-    const today = new Date().toLocaleDateString('en-GB');
-    document.getElementById('admin-today').textContent = members.filter(m => m.date === today).length;
-    document.getElementById('admin-depts').textContent = new Set(members.map(m => m.dept)).size;
-  }
-
-  function renderAdminTable(data) {
-    const tbody = document.getElementById('admin-table-body');
-    if (!data.length) {
-      tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No registrations found.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = data.map((m, i) => `
-      <tr>
-        <td style="color:var(--gray)">${i+1}</td>
-        <td><span class="serial-chip">${m.serial}</span></td>
-        <td>${m.name}</td>
-        <td>${m.id}</td>
-        <td>${m.dept}</td>
-        <td>${m.session}</td>
-        <td>${m.phone}</td>
-        <td>${m.email}</td>
-        <td style="color:var(--gray);font-size:12px">${m.date}</td>
-      </tr>
-    `).join('');
-  }
-
-  function filterTable() {
-    const q = document.getElementById('search-input').value.toLowerCase();
-    renderAdminTable(members.filter(m =>
-      m.serial.toLowerCase().includes(q) ||
-      m.name.toLowerCase().includes(q) ||
-      m.id.toLowerCase().includes(q)
-    ));
-  }
-
-  function exportCSV() {
-    if (!members.length) { showToast('No data to export.', 'error'); return; }
-    const headers = ['Serial','Name','ID','Department','Session','Phone','Email','Date'];
-    const rows = members.map(m => [m.serial,m.name,m.id,m.dept,m.session,m.phone,m.email,m.date]);
-    const csv = [headers,...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-    const a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'NSUAPC_Members.csv';
-    a.click();
-    showToast('CSV exported!');
-  }
-
-  updateHomeCount();
-</script>
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } // 'text/plain' bypasses difficult CORS setups
+                });
+                const result = await response.json();
+                
+                if(result.success) {
+                    btnContainer.classList.remove('text-blue-600');
+                    btnContainer.classList.add('text-green-600');
+                    btnContainer.innerText = `Success: Marked as ${status}.`;
+                    // Refresh data on screen
+                    searchDatabase('admin');
+                } else {
+                    btnContainer.classList.add('text-red-600');
+                    btnContainer.innerText = "Error: " + result.error;
+                }
+            } catch (error) {
+                btnContainer.classList.add('text-red-600');
+                btnContainer.innerText = "Connection error. Could not update database.";
+            }
+        }
+    </script>
 </body>
 </html>
